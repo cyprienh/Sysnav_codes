@@ -20,7 +20,7 @@ Et la variable globale indique `2 380 000` ce qui correspond bien à 2,38s.<br><
 J'ai voulu faire au plus simple, ce qui est important dans un système embarqué critique et en temps réel. Ainsi, j'ai utilisé le Timer1 du processeur avec un prescaler de 1:8 afin d'obtenir une clock de 1MHz (période de 1us). J'ai ensuite fait en sorte que le timer reset toutes les 10ms (10000 tocks) en lançant une interruption rapide qui incrémente une variable globale de temps et reset le timer. Ainsi, quand on appelle `getTime()`, on a juste à additionner la variable globale et la valeur actuelle du timer pour obtenir le temps.<br><br>
 J'ai modifié le type Time pour que ce soit un uint64 capable de contenir 10h de tocks toutes les micro secondes et mon code doit éviter tout overflow.
 
-## Test #1
+## Test #2
 ### Processus de validation
 J'ai fait en sorte que la boucle principale ajoute un élément toutes les demi secondes dans le buffer circulaire en me servant du `getTime()` de la partie précédente. En parallèle, j'ai configuré un deuxième timer (Timer2) pour qu'il supprime un élément toutes les secondes. On remarque que après quelques secondes, un élément n'est ajouté que toutes les secondes et non pas les demi secondes ce qui montre qu'il n'y a pas d'écrasement.
 
