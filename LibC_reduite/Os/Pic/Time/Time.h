@@ -14,8 +14,8 @@
 
 #include <Os/Common/Utils/GenericTypedefs.h>
 
+void _T1Interrupt(void);
 Time getTime();
-
 
 #endif
 

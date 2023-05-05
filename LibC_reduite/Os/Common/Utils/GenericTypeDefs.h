@@ -77,7 +77,7 @@
 
 
 /// d�finition du temps en microsecondes
-typedef uint8	Time;
+typedef uint64	Time;
 	
 
 
