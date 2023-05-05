@@ -12,6 +12,7 @@
 
 #include "system.h"
 #include <Os/Pic/Time/Time.h>
+#include <Os/Pic/Buffer/Buffer.h>
 #include <Os/Pic/Include33e/timer.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -46,14 +47,14 @@ System sys							__attribute__((__near__));
 int8 systemPowerUp() {
     // switch frequency => quartz 16Mhz
     PLLFBD = 15 - 2;
-	CLKDIVbits.PLLPOST = 0;
+    CLKDIVbits.PLLPOST = 0;
     CLKDIVbits.PLLPRE = 0;
     OSCTUN = 0;
     RCONbits.SWDTEN = 0;
-	__builtin_write_OSCCONH(0x03); // Initiate Clock Switch to Primary Oscillator with PLL (XTPLL, HSPLL, ECPLL)
-	__builtin_write_OSCCONL(0x01); // Start clock switching while (OSCCONbits.COSC != 0b001);
+    __builtin_write_OSCCONH(0x03); // Initiate Clock Switch to Primary Oscillator with PLL (XTPLL, HSPLL, ECPLL)
+    __builtin_write_OSCCONL(0x01); // Start clock switching while (OSCCONbits.COSC != 0b001);
     while (OSCCONbits.COSC != 0x03); // Wait for Clock switch to occur
-	while (OSCCONbits.LOCK != 1);
+    while (OSCCONbits.LOCK != 1);
    
     // Watchdog disabled
     RCONbits.SWDTEN = 0;
@@ -74,38 +75,51 @@ int8 systemPowerUp() {
                T1_PS_1_8 & T1_SYNC_EXT_OFF &
                T1_SOURCE_INT, 10000); 
 
+    // Seconde timer for emptying the circular buffer
+    ConfigIntTimer2(T2_INT_PRIOR_2 & T2_INT_ON); // Enable interrupt every period
+    WriteTimer2(0); // Reset timer on power up
+    // Timer1 has period 10000 with prescaler 1:8 so period is 10ms with 1us ticks
+    OpenTimer2(T2_ON & T2_GATE_OFF & T2_IDLE_STOP &
+               T2_PS_1_256 &
+               T2_SOURCE_INT, 31250); 
+
     return RETURN_SUCCESS;
 }//powerUpSequence
-
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // SYSTEM initialisation
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 int8 systemInit() {
-    //init_uart();
     return RETURN_SUCCESS;
 }//systemInit
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // SYSTEM starting
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-uint16 cpt;
+circular_buffer_t buffer;
+Time current_time;
+Time last_time;
+int i = 0;
 int8 systemStart() {
-	cpt = 0;
-	return RETURN_SUCCESS;
+    init_buffer(&buffer);
+    current_time = 0;
+    last_time = 0;
+    return RETURN_SUCCESS;
 }//systemStart
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // SYSTEM main loop
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 int8 systemLoop() {
-	if (!cpt)
-	{
-		Time time = getTime();
-	}
-	cpt++;
-	return RETURN_SUCCESS;
+    current_time = getTime();
+    if(current_time > last_time + 500000) {
+        last_time = current_time;
+        push_element(&buffer, i++); // Push an element every .5s
+    }
+    return RETURN_SUCCESS;
 }//systemLoop
 
 
@@ -116,4 +130,15 @@ int8 systemShutDown() {
     return RETURN_SUCCESS;
 }//systemShutDown
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// SYSTEM interrupt function called every .8s to test circular buffer
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void __attribute__((__interrupt__)) _T2Interrupt(void) 
+{    
+    // Pop an element every second
+    int popped = pop_element(&buffer);
+    WriteTimer2(0); // Reset timer
+    IFS0bits.T2IF = 0; // Clear timer interrupt flag
+}//_T2Interrupt
 
