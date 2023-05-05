@@ -1,0 +1,14 @@
+{
+  "files.associations": {
+    "*.ejs": "html",
+    "pic33e_plib.h": "c",
+    "comparator.h": "c",
+    "generictypedefs.h": "c",
+    "os.h": "c",
+    "time.h": "c",
+    "timer.h": "c",
+    "system.h": "c",
+    "p33exxxx.h": "c",
+    "p33ep512mu814.h": "c"
+}
+}
