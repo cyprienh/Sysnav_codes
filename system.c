@@ -10,7 +10,9 @@
 
 
 
-#include "System.h"
+#include "system.h"
+#include <Os/Pic/Time/Time.h>
+#include <Os/Pic/Include33e/timer.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // HARDWARE CONFIG
@@ -81,7 +83,7 @@ int8 systemPowerUp() {
 // SYSTEM initialisation
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 int8 systemInit() {
-   
+    //init_uart();
     return RETURN_SUCCESS;
 }//systemInit
 

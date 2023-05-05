@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///  @file		Main.h
 ///  
-///  @brief		Gère la boucle principale du main
+///  @brief		Gï¿½re la boucle principale du main
 ///  
 ///  @date		15/04/2014
 ///  @author	N/A
@@ -12,7 +12,7 @@
 
 
 #include <Os/Os.h>
-#include <System.h>
+#include "../../../system.h"
 
 
 
