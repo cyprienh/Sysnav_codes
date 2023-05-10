@@ -1,5 +1,6 @@
 # Sysnav
 
+## CODE EMBARQUÉ
 ## Test #1
 J'ai commencé à développer la solution sous MacOS avant de réaliser que je ne pourrais pas compiler et donc tester mon code car les bibliothèques nécessaires ne sont plus disponibles. Je suis donc passé sur Windows où j'ai finalement réussi la compilation grâce à la commande suivante :
 ```
@@ -26,3 +27,11 @@ J'ai fait en sorte que la boucle principale ajoute un élément toutes les demi 
 
 ### Implémentation
 J'ai choisi de faire un buffer circulaire simple. Tous les buffers du même type font la même taille et l'utilisateur a accès au struct. Ces simplicités permettent une implémentation moins volumineuse et modulaire que l'on peut rendre plus robuste facilement.
+
+## ÉLECTRONIQUE
+## Test #1
+![Schéma électrique du Test #1](Test_Electronique/schematic.png)<br>
+Le schéma ci-dessus est inspiré de la datasheet du HMC1001 fournie dans le dossier `Test_Electronique/Datasheets/`.
+### Récupération des mesures
+Pour récupérer des données du capteur, il est possible de suivre le flowchart ci-dessous. `S/R`, `CAL` et `RDY` correspondent aux signaux du même nom sur le schéma électrique. `readSPI()` fait référence aux pins `MISO`, `SCLK` et `SS`.<br>
+![Flowchart du Test #1](Test_Electronique/flowchart.png)<br>
